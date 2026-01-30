@@ -16,6 +16,8 @@ var direction: float
 var dirs: Dictionary = {"UP": "Up", "LEFT": "Left", "RIGHT": "Right"}
 var loc:  String = "Up"
 
+@onready var debug_label = $Camera2D/CanvasLayer/DebugLabel
+
 enum states {
 	IDLE,
 	RUN,
@@ -28,10 +30,11 @@ var state: states = states.IDLE
 
 @onready var slash: PackedScene = load("uid://b70go1gmhi1sw")
 
-#func is_sliding()->bool:
-	#return (state == states.SLIDE)
+func is_rolling()->bool:
+	return (state == states.ROLL)
 
 func _physics_process(delta: float) -> void:
+	print_info()
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -49,7 +52,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("up"):
 		loc = dirs["UP"]
 	
-	if Input.is_action_just_pressed("attack") and can_attack:
+	if Input.is_action_just_pressed("attack") and can_attack and not is_rolling():
 		var a: Slash = slash.instantiate()
 		if loc == dirs["LEFT"]:
 			a.get_node("Texture").flip_h = true
@@ -75,11 +78,13 @@ func _physics_process(delta: float) -> void:
 
 func state_logic(_delta: float) -> void:
 	if state == states.ROLL:
+		invuln = true
 		$Animation.play("rolling")
 		pass
 		#$walking.disabled = true
 		#$sliding.disabled = false
 	else:
+		invuln = false
 		$Animation.play("walking")
 		#$sliding.disabled = true
 		$walking.disabled = false
@@ -90,3 +95,7 @@ func allow_slash() -> void:
 
 func _on_animation_finished() -> void:
 	state = states.IDLE
+
+func print_info() -> void:
+	debug_label.text = "Invulnerable: " + str(invuln)
+	

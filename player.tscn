@@ -107,7 +107,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_onrkg"]
 size = Vector2(16, 32)
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_onrkg")
 
 [node name="Animation" type="AnimatedSprite2D" parent="."]
@@ -131,5 +131,14 @@ position = Vector2(32, 0)
 [node name="Up" type="Marker2D" parent="locations"]
 position = Vector2(0, -32)
 rotation = -1.5707964
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera2D"]
+
+[node name="DebugLabel" type="Label" parent="Camera2D/CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 23.0
 
 [connection signal="animation_finished" from="Animation" to="." method="_on_animation_finished"]

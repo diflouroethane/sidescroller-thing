@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://20bupuyfp2gl"]
+
+[ext_resource type="Script" uid="uid://hux2e6jvgtn7" path="res://swordsman.gd" id="1_fb5tu"]
+[ext_resource type="Texture2D" uid="uid://cqivw2jw2dil4" path="res://icon.svg" id="1_os08l"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fb5tu"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_os08l")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_os08l"]
+size = Vector2(128, 128)
+
+[node name="Swordsman" type="Area2D" unique_id=2044713128]
+scale = Vector2(0.5, 0.5)
+script = ExtResource("1_fb5tu")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=708825983]
+sprite_frames = SubResource("SpriteFrames_fb5tu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1251469965]
+shape = SubResource("RectangleShape2D_os08l")

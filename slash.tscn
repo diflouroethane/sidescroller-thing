@@ -56,7 +56,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_twb2h"]
 size = Vector2(32, 32)
 
-[node name="Slash" type="Area2D"]
+[node name="Slash" type="Area2D" groups=["playerAttack"]]
 script = ExtResource("1_tocf0")
 
 [node name="Texture" type="AnimatedSprite2D" parent="."]
