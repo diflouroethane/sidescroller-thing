@@ -4,19 +4,24 @@ class_name Player
 
 const WALKING_SPEED: float = 15_000.0
 const ROLLING_SPEED: float = 30_000.0
+const RECOIL_SPEED: float = 15_000.0
 
+var max_health: int = 10
+var health: int = max_health
 #const SLIDING_SPEED: float = 30_000.0
 #var sliding: bool = false
 var rolling: bool = false
 var invuln: bool = false
 var can_attack: bool = true
 
+var recoiling: bool = false
+
 var direction: float
 
 var dirs: Dictionary = {"UP": "Up", "LEFT": "Left", "RIGHT": "Right"}
 var loc:  String = "Up"
 
-@onready var debug_label = $Camera2D/CanvasLayer/DebugLabel
+@onready var debug_label = $Camera2D/CanvasLayer/VBoxContainer/DebugLabel
 
 enum states {
 	IDLE,
@@ -30,11 +35,15 @@ var state: states = states.IDLE
 
 @onready var slash: PackedScene = load("uid://b70go1gmhi1sw")
 
-func is_rolling()->bool:
-	return (state == states.ROLL)
+func _ready() -> void:
+	$Camera2D/CanvasLayer/VBoxContainer/ProgressBar.max_value = max_health
+	
+
 
 func _physics_process(delta: float) -> void:
 	print_info()
+	
+	Global.player_pos = position
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -71,10 +80,16 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, WALKING_SPEED)
 	
+	
 	if Input.is_action_pressed("roll") && direction != 0:
 		state = states.ROLL
 	
 	move_and_slide()
+	
+	
+
+func is_rolling()->bool:
+	return (state == states.ROLL)
 
 func state_logic(_delta: float) -> void:
 	if state == states.ROLL:
@@ -97,5 +112,16 @@ func _on_animation_finished() -> void:
 	state = states.IDLE
 
 func print_info() -> void:
+	$Camera2D/CanvasLayer/VBoxContainer/ProgressBar.value = health
 	debug_label.text = "Invulnerable: " + str(invuln)
+
+func recoil(dir: String) -> void:
+	if dir == "left":
+		recoiling = true
+
+func hurt(dmg: int) -> void:
+	if !(dmg>0):
+		push_error("tried to hurt player for negative health!!")
+		return
+	health -= dmg
 	
