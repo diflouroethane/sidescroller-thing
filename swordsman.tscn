@@ -27,4 +27,8 @@ sprite_frames = SubResource("SpriteFrames_fb5tu")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1251469965]
 shape = SubResource("RectangleShape2D_os08l")
 
+[node name="SmashTimer" type="Timer" parent="." unique_id=1682561864]
+one_shot = true
+
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="SmashTimer" to="." method="_on_smash_timer_timeout"]

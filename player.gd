@@ -3,7 +3,7 @@ extends CharacterBody2D
 class_name Player
 
 const WALKING_SPEED: float = 15_000.0
-const ROLLING_SPEED: float = 30_000.0
+const ROLLING_SPEED: float = 20_000.0
 const RECOIL_SPEED: float = 15_000.0
 
 var max_health: int = 10
@@ -76,7 +76,7 @@ func _physics_process(delta: float) -> void:
 	$Animation.flip_h = true if direction < 0 else false
 	
 	if direction:
-		var spd = WALKING_SPEED
+		var spd = WALKING_SPEED if not is_rolling() else ROLLING_SPEED
 		velocity.x = direction * spd * delta
 	else:
 		velocity.x = move_toward(velocity.x, 0, WALKING_SPEED)
