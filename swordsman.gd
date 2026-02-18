@@ -8,8 +8,10 @@ enum states {
 	CHARGE_ATTACK,
 	REST
 }
+
 var state: states = states.REST
-var p_pos: String
+var p_pos: int ### -1 is left 1 is right
+var opp_pos: int
 var velocity: Vector2 = Vector2.ZERO
 var anim_size: Vector2
 var tween: Tween
@@ -22,21 +24,30 @@ func _ready() -> void:
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	match state:
 		states.WALK:
-			if Global.player_pos.x > position.x:
-				velocity.x = SPEED * _delta
-				p_pos = "right"
-				#print(p_pos)
-			elif Global.player_pos.x < position.x:
-				velocity.x = -SPEED * _delta
-				p_pos = "left"
-				#print(p_pos)
+			move(delta)
+			if abs(position.x-Global.player_pos.x) >= 240:
+				state = states.CHARGE_ATTACK 
 		states.ATTACK:
 			pass
 		states.CHARGE_ATTACK:
-			pass
+			var past: int = p_pos
+			move(delta, 3, false)
+			print("charging ", past, " ", opp_pos, " ", p_pos)
+			print(global_position.x-Global.player_pos.x)
+			print(position.x-Global.player_pos.x)
+			var dist = p_pos * 100
+			print(dist)
+			if sign(dist) == -1:
+				if (global_position.x-Global.player_pos.x) <= dist:
+					print("aaaa ", opp_pos)
+					state = states.WALK
+			else:
+				if (global_position.x-Global.player_pos.x) >= dist:
+					print("aaaa ", opp_pos)
+					state = states.WALK
 		states.REST:
 			changeto(states.WALK)
 	position += velocity
@@ -51,24 +62,22 @@ func _on_body_entered(body: Node2D) -> void:
 		print("hurt player for one damage!")
 		
 		calc_recoil(body)
-		
-		#if p_pos == "left":
-			#var space_state = get_world_2d().direct_space_state
-			#var query = PhysicsRayQueryParameters2D.create(body.global_position, Vector2(body.position.x -(anim_size.x/3), body.position.y))
-			#var result = space_state.intersect_ray(query)
-			#if not result:
-				#var bt = body.create_tween()
-				#bt.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-				#bt.tween_property(body, "position", Vector2(body.position.x -(anim_size.x/3), body.position.y), 0.1)
-			##body.position.x -= anim_size.x/2
-		#else:
-			#body.position.x += anim_size.x/2
-		#else:
-			#body.recoil(p_pos)
 		body.hurt(1)
 
+func move(delta: float, factor: float = 1, track: bool = true) -> void:
+	if track:
+		if Global.player_pos.x > position.x: ## player is to the right, so move right
+			p_pos = 1
+			opp_pos = -p_pos
+		elif Global.player_pos.x < position.x: ## player is to the left, so move left
+			p_pos = -1
+			opp_pos = -p_pos
+			
+			#print(p_pos)
+	velocity.x = (p_pos*SPEED) * delta * factor
+
 func calc_recoil(body: Player):
-	var potentialx = body.position.x - (anim_size.x/3) if p_pos == "left" else body.position.x + (anim_size.x/3)
+	var potentialx = body.position.x - (anim_size.x/3) if p_pos == -1 else body.position.x + (anim_size.x/3)
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsRayQueryParameters2D.create(body.global_position, Vector2(potentialx, body.position.y))
 	var result = space_state.intersect_ray(query)

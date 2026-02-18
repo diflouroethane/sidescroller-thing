@@ -32,7 +32,6 @@ enabled=PackedStringArray("res://addons/godot_super-wakatime/plugin.cfg")
 hurt=""
 playerAttack=""
 player=""
-oss=""
 boss=""
 
 [input]
