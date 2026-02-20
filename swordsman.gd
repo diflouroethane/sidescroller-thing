@@ -12,8 +12,8 @@ enum states {
 }
 
 @onready var timer: Timer = $SmashTimer
-
-var state: states = states.REST
+@onready var orig_y: float = position.y
+var state: states = states.WALK
 var p_pos: int ### -1 is left 1 is right
 var opp_pos: int
 var velocity: Vector2 = Vector2.ZERO
@@ -21,7 +21,7 @@ var anim_size: Vector2
 var tween: Tween
 var smashed: int = 0
 var recoil: bool = true
-var can_smash = true
+var can_move: bool = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -32,11 +32,22 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("restart"):
+		get_tree().reload_current_scene()
+	
 	match state:
 		states.WALK:
+			can_move = true
+			position.y = 32
+			recoil = true
+			smashed = 0
+			print("at walk")
+			print(position)
 			move(delta, 1.5)
 			if abs(position.x-Global.player_pos.x) >= 240:
-				state = states.SMASH_FOLLOW
+				print("going to SMASH")
+				state = states.CHARGE_ATTACK
+			
 		states.ATTACK:
 			pass
 		states.CHARGE_ATTACK:
@@ -59,17 +70,38 @@ func _process(delta: float) -> void:
 					var a = randf()
 					print("chance: ", a)
 					state = states.WALK if a > 0.5 else states.SMASH_FOLLOW
+			
 		states.SMASH_FOLLOW:
+			print("at smash pt1")
 			recoil = false
 			position = Global.player_pos
-			position.y -= 300
-			if can_smash:
-				state = states.SMASH_ATTACK
+			position.y -= 200
+			
+			print("frog!")
+			state = states.SMASH_ATTACK
+			
 		states.SMASH_ATTACK:
-			move(delta, 1, true, true, false, 9)
+			move(delta, 0, true, true, true, 9)
+			#await get_tree().create_timer(3).timeout
+			print("at smash pt2")
+			if global_position.y-Global.player_pos.y >= 100:
+				smashed += 1
+				if smashed >= 3:
+					state = states.REST
+				else:
+					state = states.SMASH_FOLLOW
+			if !can_move:
+				print("cannot move. going to WALK")
+				state = states.WALK
+				
 		states.REST:
+			position = Global.player_pos
+			position.x += (-p_pos*90)
+			position.y = orig_y
+			print("rest")
 			state = states.WALK
-	position += velocity
+	
+	position += velocity # move?
 
 
 func _on_body_entered(body: Node2D) -> void:
@@ -81,19 +113,26 @@ func _on_body_entered(body: Node2D) -> void:
 		body.hurt(1)
 
 func move(delta: float, factor: float = 1, track: bool = true, down: bool = false, no_x: bool = false, factor2: float = 1.0) -> void:
-	if track:
-		if Global.player_pos.x > position.x: ## player is to the right, so move right
-			p_pos = 1
-			opp_pos = -p_pos
-		elif Global.player_pos.x < position.x: ## player is to the left, so move left
-			p_pos = -1
-			opp_pos = -p_pos
-			
-			#print(p_pos)
-	velocity.x = (p_pos*SPEED) * delta * factor if !no_x else 0.0
-	print(velocity.x)
-	if down:
-		velocity.y = SPEED * delta * factor2
+	if can_move:
+		if track:
+			if Global.player_pos.x > position.x: ## player is to the right, so move right
+				p_pos = 1
+				opp_pos = -p_pos
+			elif Global.player_pos.x < position.x: ## player is to the left, so move left
+				p_pos = -1
+				opp_pos = -p_pos
+				
+				#print(p_pos)
+		velocity.x = ((p_pos*SPEED) * delta) * factor if !no_x else 0.0
+		#print(velocity.x)
+		if down:
+			velocity.y = (SPEED * delta)* factor2
+			#await get_tree().create_timer(2).timeout
+		else:
+			velocity.y = 0
+	#else:
+		#velocity = Vector2.ZERO
+	
 
 func calc_recoil(body: Player):
 	var potentialx = body.position.x - (anim_size.x/3) if p_pos == -1 else body.position.x + (anim_size.x/3)
@@ -108,5 +147,3 @@ func calc_recoil(body: Player):
 func wait_to_smash() -> void:
 	var a = get_tree().create_timer(2)
 	a.connect("timeout", set.bind("state", states.SMASH_ATTACK))
-	
-	
