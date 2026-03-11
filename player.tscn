@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://ce5g47oqmbqpn" path="res://player.gd" id="1_onrkg"]
 [ext_resource type="Texture2D" uid="uid://ddjxt37h2tiie" path="res://images/sprites/sheets/rolling-sheet.png" id="2_i3pqv"]
 [ext_resource type="Texture2D" uid="uid://cdr0e3s0nqt3e" path="res://images/sprites/player.png" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://xa8081vimh4x" path="res://camera_2d.gd" id="4_hqtel"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_i3pqv"]
 atlas = ExtResource("2_i3pqv")
@@ -134,6 +135,7 @@ rotation = -1.5707964
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=930933239]
 position_smoothing_enabled = true
+script = ExtResource("4_hqtel")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera2D" unique_id=2075188059]
 

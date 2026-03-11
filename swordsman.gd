@@ -8,10 +8,11 @@ enum states {
 	CHARGE_ATTACK,
 	REST,
 	SMASH_FOLLOW,
-	SMASH_ATTACK
+	SMASH_ATTACK,
+	JUMP_BACK
 }
 
-@onready var timer: Timer = $SmashTimer
+@onready var hit_aggro_timer: Timer = $HitAccummulatorResetTimer
 @onready var orig_y: float = position.y
 var state: states = states.WALK
 var p_pos: int ### -1 is left 1 is right
@@ -22,6 +23,8 @@ var tween: Tween
 var smashed: int = 0
 var recoil: bool = true
 var can_move: bool = true
+var health: int = 20
+var hit_aggro: int = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -35,25 +38,29 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
 	
+	if hit_aggro >= 4:
+		state = states.JUMP_BACK
+	
 	match state:
 		states.WALK:
 			can_move = true
 			position.y = 32
 			recoil = true
 			smashed = 0
-			print("at walk")
-			print(position)
+			#print("at walk")
+			#print(position)
 			move(delta, 1.5)
 			if abs(position.x-Global.player_pos.x) >= 240:
 				print("going to SMASH")
 				state = states.CHARGE_ATTACK
 			
-		states.ATTACK:
-			pass
+		states.JUMP_BACK:
+			move(delta, -4, false)
+			await get_tree().create_timer(0.25).timeout
+			state = states.CHARGE_ATTACK
+			
 		states.CHARGE_ATTACK:
-			var past: int = p_pos
 			move(delta, 4, false)
-			print("charging ", past, " ", opp_pos, " ", p_pos)
 			print(global_position.x-Global.player_pos.x)
 			print(position.x-Global.player_pos.x)
 			var dist = p_pos * 100
@@ -72,26 +79,27 @@ func _process(delta: float) -> void:
 					state = states.WALK if a > 0.5 else states.SMASH_FOLLOW
 			
 		states.SMASH_FOLLOW:
-			print("at smash pt1")
+			#print("at smash pt1")
 			recoil = false
 			position = Global.player_pos
 			position.y -= 200
-			
-			print("frog!")
+			#await get_tree().create_timer(1).timeout
+			#print("frog!")
 			state = states.SMASH_ATTACK
 			
 		states.SMASH_ATTACK:
 			move(delta, 0, true, true, true, 9)
 			#await get_tree().create_timer(3).timeout
-			print("at smash pt2")
+			#print("at smash pt2")
 			if global_position.y-Global.player_pos.y >= 100:
+				Global.camera.shake()
 				smashed += 1
 				if smashed >= 3:
 					state = states.REST
 				else:
 					state = states.SMASH_FOLLOW
 			if !can_move:
-				print("cannot move. going to WALK")
+				#print("cannot move. going to WALK")
 				state = states.WALK
 				
 		states.REST:
@@ -147,3 +155,22 @@ func calc_recoil(body: Player):
 func wait_to_smash() -> void:
 	var a = get_tree().create_timer(2)
 	a.connect("timeout", set.bind("state", states.SMASH_ATTACK))
+
+
+func _on_area_entered(area: Area2D) -> void:
+	if area is Slash:
+		hurt()
+
+func hurt():
+	hit_aggro += 1
+	print(hit_aggro)
+	hit_aggro_timer.start()
+	
+	health -= 1
+	if health <= 0:
+		queue_free()
+	print(health, " just got hurt")
+
+
+func _on_hit_accummulator_reset_timer_timeout() -> void:
+	hit_aggro = 0

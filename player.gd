@@ -38,7 +38,7 @@ var state: states = states.IDLE
 
 func _ready() -> void:
 	$Camera2D/CanvasLayer/VBoxContainer/ProgressBar.max_value = max_health
-	
+	Global.camera = $Camera2D
 
 
 func _physics_process(delta: float) -> void:
@@ -125,4 +125,5 @@ func hurt(dmg: int) -> void:
 		push_error("tried to hurt player for negative health!!")
 		return
 	health -= dmg
+	$Camera2D.shake(10)
 	

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://b70go1gmhi1sw"]
+[gd_scene format=3 uid="uid://b70go1gmhi1sw"]
 
 [ext_resource type="Texture2D" uid="uid://bn6ounxhuv7bu" path="res://images/sprites/sheets/slash-sheet.png" id="1_bf50k"]
 [ext_resource type="Script" uid="uid://dvk03hsy5ynio" path="res://slash.gd" id="1_tocf0"]
@@ -56,14 +56,14 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_twb2h"]
 size = Vector2(32, 32)
 
-[node name="Slash" type="Area2D" groups=["playerAttack"]]
+[node name="Slash" type="Area2D" unique_id=1833035279 groups=["playerAttack"]]
 script = ExtResource("1_tocf0")
 
-[node name="Texture" type="AnimatedSprite2D" parent="."]
+[node name="Texture" type="AnimatedSprite2D" parent="." unique_id=1452494174]
 sprite_frames = SubResource("SpriteFrames_cjwdp")
 animation = &"slash"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1351192217]
 shape = SubResource("RectangleShape2D_twb2h")
 
 [connection signal="animation_finished" from="Texture" to="." method="_on_animated_sprite_2d_animation_finished"]
