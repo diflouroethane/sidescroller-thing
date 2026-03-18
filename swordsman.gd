@@ -14,6 +14,9 @@ enum states {
 
 @onready var hit_aggro_timer: Timer = $HitAccummulatorResetTimer
 @onready var orig_y: float = position.y
+
+@export var disabled: bool = false
+signal defeated
 var state: states = states.WALK
 var p_pos: int ### -1 is left 1 is right
 var opp_pos: int
@@ -23,11 +26,16 @@ var tween: Tween
 var smashed: int = 0
 var recoil: bool = true
 var can_move: bool = true
-var health: int = 20
+var max_health: int = 35
+var health: int = max_health
 var hit_aggro: int = 0
+var title: String = "The Drone"
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	play_anim("fly")
+	Global.boss_max_health = max_health
+	Global.boss_name = title
 	#pass # Replace with function body.
 	var a: SpriteFrames = $AnimatedSprite2D.sprite_frames
 	anim_size = a.get_frame_texture($AnimatedSprite2D.animation, 0).get_size()
@@ -35,6 +43,12 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	Global.boss_visible = !disabled
+	if disabled:
+		return
+	else:
+		Global.boss_health = health
+	
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
 	
@@ -43,6 +57,7 @@ func _process(delta: float) -> void:
 	
 	match state:
 		states.WALK:
+			play_anim("fly")
 			can_move = true
 			position.y = 32
 			recoil = true
@@ -60,7 +75,7 @@ func _process(delta: float) -> void:
 			state = states.CHARGE_ATTACK
 			
 		states.CHARGE_ATTACK:
-			move(delta, 4, false)
+			move(delta, 6.5, false)
 			print(global_position.x-Global.player_pos.x)
 			print(position.x-Global.player_pos.x)
 			var dist = p_pos * 100
@@ -71,12 +86,12 @@ func _process(delta: float) -> void:
 					print("aaaa ", opp_pos)
 					var a = randf()
 					print("chance:", a)
-					state = states.WALK if a > 0.5 else states.SMASH_FOLLOW
+					state = states.WALK if a > 0.875 else states.SMASH_FOLLOW
 			else:
 				if (global_position.x-Global.player_pos.x) >= dist:
 					var a = randf()
 					print("chance: ", a)
-					state = states.WALK if a > 0.5 else states.SMASH_FOLLOW
+					state = states.WALK if a > 0.875 else states.SMASH_FOLLOW
 			
 		states.SMASH_FOLLOW:
 			#print("at smash pt1")
@@ -88,10 +103,11 @@ func _process(delta: float) -> void:
 			state = states.SMASH_ATTACK
 			
 		states.SMASH_ATTACK:
-			move(delta, 0, true, true, true, 9)
+			play_anim("smash")
+			move(delta, 0, true, true, true, [9].pick_random())
 			#await get_tree().create_timer(3).timeout
 			#print("at smash pt2")
-			if global_position.y-Global.player_pos.y >= 100:
+			if global_position.y-Global.player_pos.y >= 40:
 				Global.camera.shake()
 				smashed += 1
 				if smashed >= 3:
@@ -132,9 +148,12 @@ func move(delta: float, factor: float = 1, track: bool = true, down: bool = fals
 				
 				#print(p_pos)
 		velocity.x = ((p_pos*SPEED) * delta) * factor if !no_x else 0.0
+		if !no_x:
+			$AnimatedSprite2D.speed_scale = factor
 		#print(velocity.x)
 		if down:
 			velocity.y = (SPEED * delta)* factor2
+			$AnimatedSprite2D.speed_scale = factor2
 			#await get_tree().create_timer(2).timeout
 		else:
 			velocity.y = 0
@@ -167,10 +186,26 @@ func hurt():
 	hit_aggro_timer.start()
 	
 	health -= 1
-	if health <= 0:
-		queue_free()
+	#Global.boss_health = health
+	Callable(freeze_frame).call_deferred()
 	print(health, " just got hurt")
 
+func play_anim(anim: StringName = &"fly"):
+	if $AnimatedSprite2D.animation != anim:
+		$AnimatedSprite2D.play(anim)
 
+func freeze_frame(duration: float = 0.05):
+	$AnimatedSprite2D.modulate = Color(18.892, 18.892, 18.892)
+	var time_scale = Engine.time_scale
+	Engine.time_scale = 0
+	await get_tree().create_timer(duration, true, false, true).timeout
+	Engine.time_scale = time_scale
+	$AnimatedSprite2D.modulate = Color(1,1,1,1)
+	
+	if health == 0:
+		disabled = true
+		Global.boss_health = 0
+		defeated.emit()
+		queue_free()
 func _on_hit_accummulator_reset_timer_timeout() -> void:
 	hit_aggro = 0

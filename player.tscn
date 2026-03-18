@@ -134,6 +134,11 @@ position = Vector2(0, -32)
 rotation = -1.5707964
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=930933239]
+zoom = Vector2(1.5, 1.5)
+limit_left = -1413
+limit_top = -10000001
+limit_right = 9999995
+limit_bottom = 86
 position_smoothing_enabled = true
 script = ExtResource("4_hqtel")
 
@@ -149,6 +154,43 @@ layout_mode = 2
 [node name="DebugLabel" type="Label" parent="Camera2D/CanvasLayer/VBoxContainer" unique_id=190301344]
 layout_mode = 2
 text = "frog"
+
+[node name="BossLifeContainer" type="HBoxContainer" parent="Camera2D/CanvasLayer" unique_id=887420951]
+visible = false
+offset_right = 1152.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="Camera2D/CanvasLayer/BossLifeContainer" unique_id=880487161]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="BossHealth" type="ProgressBar" parent="Camera2D/CanvasLayer/BossLifeContainer" unique_id=1657443592]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+show_percentage = false
+
+[node name="BossName" type="Label" parent="Camera2D/CanvasLayer/BossLifeContainer/BossHealth" unique_id=246115880]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Placeholder Name"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Camera2D/CanvasLayer/BossLifeContainer" unique_id=1148632971]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
 
 [node name="RecoilTimer" type="Timer" parent="." unique_id=1944061811]
 wait_time = 0.25

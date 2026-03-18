@@ -1,34 +1,144 @@
 [gd_scene format=3 uid="uid://20bupuyfp2gl"]
 
 [ext_resource type="Script" uid="uid://hux2e6jvgtn7" path="res://swordsman.gd" id="1_fb5tu"]
-[ext_resource type="Texture2D" uid="uid://cqivw2jw2dil4" path="res://icon.svg" id="1_os08l"]
+[ext_resource type="Texture2D" uid="uid://cd6vubsalqk5r" path="res://images/sprites/raw/boss/fly/bossfly1.png" id="2_dytpo"]
+[ext_resource type="Texture2D" uid="uid://cy7esxalghi6o" path="res://images/sprites/raw/boss/fly/bossfly2.png" id="3_hf1pw"]
+[ext_resource type="Texture2D" uid="uid://ctwdn57u8nbxf" path="res://images/sprites/raw/boss/fly/bossfly3.png" id="4_ad4dj"]
+[ext_resource type="Texture2D" uid="uid://cyywa5bb1ecck" path="res://images/sprites/raw/boss/fly/bossfly4.png" id="5_a0am2"]
+[ext_resource type="Texture2D" uid="uid://clvvw46tn2bpr" path="res://images/sprites/raw/boss/fly/bossfly5.png" id="6_owh2j"]
+[ext_resource type="Texture2D" uid="uid://7ibb3er1ii53" path="res://images/sprites/raw/boss/fly/bossfly6.png" id="7_p8vne"]
+[ext_resource type="Texture2D" uid="uid://bb1vn21g8lcew" path="res://images/sprites/raw/boss/fly/bossfly7.png" id="8_bcfec"]
+[ext_resource type="Texture2D" uid="uid://bbmpukf1rp3l4" path="res://images/sprites/raw/boss/smash/bosssmash1.png" id="9_paifl"]
+[ext_resource type="Texture2D" uid="uid://dvtnalqt4cyw1" path="res://images/sprites/raw/boss/smash/bosssmash2.png" id="10_72mhg"]
+[ext_resource type="Texture2D" uid="uid://cpachnxcpv02c" path="res://images/sprites/raw/boss/smash/bosssmash3.png" id="11_3hgm2"]
+[ext_resource type="Texture2D" uid="uid://cimsix220yc57" path="res://images/sprites/raw/boss/smash/bosssmash4.png" id="12_hg55k"]
+[ext_resource type="Texture2D" uid="uid://7ho1i4tokx78" path="res://images/sprites/raw/boss/smash/bosssmash5.png" id="13_dytpo"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fb5tu"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_os08l")
+"texture": ExtResource("2_dytpo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_hf1pw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_ad4dj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_a0am2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_owh2j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_p8vne")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_bcfec")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_p8vne")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_owh2j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_a0am2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_ad4dj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_hf1pw")
 }],
 "loop": true,
-"name": &"default",
-"speed": 5.0
+"name": &"fly",
+"speed": 20.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_paifl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_72mhg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_3hgm2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_hg55k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_dytpo")
+}],
+"loop": false,
+"name": &"smash",
+"speed": 20.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_os08l"]
-size = Vector2(128, 128)
+size = Vector2(64, 80)
+
+[sub_resource type="Animation" id="Animation_paifl"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_4sk62"]
+resource_name = "fly"
+length = 0.56666666
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.03, 0.6333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 0.17453292]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_paifl"]
+_data = {
+&"RESET": SubResource("Animation_paifl"),
+&"fly": SubResource("Animation_4sk62")
+}
 
 [node name="Swordsman" type="Area2D" unique_id=2044713128 groups=["boss"]]
 scale = Vector2(0.5, 0.5)
 script = ExtResource("1_fb5tu")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=708825983]
+position = Vector2(0, 8)
+scale = Vector2(1.6666665, 1.6666665)
 sprite_frames = SubResource("SpriteFrames_fb5tu")
+animation = &"fly"
+autoplay = "fly"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1251469965]
+position = Vector2(0, 8)
 shape = SubResource("RectangleShape2D_os08l")
 
 [node name="HitAccummulatorResetTimer" type="Timer" parent="." unique_id=1858497833]
+wait_time = 1.5
 one_shot = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1744810412]
+libraries/ = SubResource("AnimationLibrary_paifl")
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

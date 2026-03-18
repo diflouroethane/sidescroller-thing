@@ -6,7 +6,7 @@ const WALKING_SPEED: float = 15_000.0
 const ROLLING_SPEED: float = 20_000.0
 const RECOIL_SPEED: float = 15_000.0
 
-var max_health: int = 10
+var max_health: int = 15
 var health: int = max_health
 #const SLIDING_SPEED: float = 30_000.0
 #var sliding: bool = false
@@ -24,6 +24,7 @@ var loc:  String = "Up"
 
 @onready var debug_label = $Camera2D/CanvasLayer/VBoxContainer/DebugLabel
 
+
 enum states {
 	IDLE,
 	RUN,
@@ -35,6 +36,8 @@ enum states {
 var state: states = states.IDLE
 
 @onready var slash: PackedScene = load("uid://b70go1gmhi1sw")
+@onready var boss_health: ProgressBar = $Camera2D/CanvasLayer/BossLifeContainer/BossHealth
+@onready var boss_name: Label = $Camera2D/CanvasLayer/BossLifeContainer/BossHealth/BossName
 
 func _ready() -> void:
 	$Camera2D/CanvasLayer/VBoxContainer/ProgressBar.max_value = max_health
@@ -42,6 +45,10 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	boss_health.max_value = Global.boss_max_health
+	$Camera2D/CanvasLayer/BossLifeContainer.visible = Global.boss_visible
+	boss_health.value = lerp(boss_health.value,float(Global.boss_health), 0.25)
+	boss_name.text = Global.boss_name
 	print_info()
 	
 	Global.player_pos = position
@@ -125,5 +132,8 @@ func hurt(dmg: int) -> void:
 		push_error("tried to hurt player for negative health!!")
 		return
 	health -= dmg
+	if health <= 0:
+		
+		get_tree().reload_current_scene()
 	$Camera2D.shake(10)
 	

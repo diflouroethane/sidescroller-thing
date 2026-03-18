@@ -1,5 +1,7 @@
 extends Camera2D
 
+class_name Camera
+
 @export var shake_decay_rate: float = 5.0
 @export var strength: float = 30.0
 @onready var rand = RandomNumberGenerator.new()
