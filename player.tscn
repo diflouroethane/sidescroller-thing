@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://ddjxt37h2tiie" path="res://images/sprites/sheets/rolling-sheet.png" id="2_i3pqv"]
 [ext_resource type="Texture2D" uid="uid://cdr0e3s0nqt3e" path="res://images/sprites/player.png" id="2_onrkg"]
 [ext_resource type="Script" uid="uid://xa8081vimh4x" path="res://camera_2d.gd" id="4_hqtel"]
+[ext_resource type="AudioStream" uid="uid://d404abadsf7j" path="res://hurt.wav" id="5_sweqy"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_i3pqv"]
 atlas = ExtResource("2_i3pqv")
@@ -195,6 +196,9 @@ size_flags_stretch_ratio = 0.25
 [node name="RecoilTimer" type="Timer" parent="." unique_id=1944061811]
 wait_time = 0.25
 one_shot = true
+
+[node name="HurtSound" type="AudioStreamPlayer2D" parent="." unique_id=1227434750]
+stream = ExtResource("5_sweqy")
 
 [connection signal="animation_finished" from="Animation" to="." method="_on_animation_finished"]
 [connection signal="timeout" from="RecoilTimer" to="." method="_on_recoil_timer_timeout"]

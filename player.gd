@@ -34,6 +34,7 @@ enum states {
 	ATTACK
 }
 var state: states = states.IDLE
+@onready var hurt_sound: AudioStreamPlayer2D = $HurtSound
 
 @onready var slash: PackedScene = load("uid://b70go1gmhi1sw")
 @onready var boss_health: ProgressBar = $Camera2D/CanvasLayer/BossLifeContainer/BossHealth
@@ -128,6 +129,7 @@ func recoil(dir: String) -> void:
 		recoiling = true
 
 func hurt(dmg: int) -> void:
+	$HurtSound.play()
 	if !(dmg>0):
 		push_error("tried to hurt player for negative health!!")
 		return

@@ -115,7 +115,7 @@ position = Vector2(416, 256)
 [node name="ExitbarrierIn" type="Marker2D" parent="." unique_id=1993262324]
 position = Vector2(416, 0)
 
-[node name="Label" type="Label" parent="." unique_id=1374770406]
+[node name="EndLabel" type="Label" parent="." unique_id=1374770406]
 offset_left = 808.0
 offset_top = -56.0
 offset_right = 955.0
@@ -123,6 +123,29 @@ offset_bottom = -33.0
 text = "Thanks for playing!
 more might be coming soon!"
 horizontal_alignment = 1
+
+[node name="EndLabel2" type="Label" parent="." unique_id=1591774796]
+offset_left = -1384.0
+offset_top = -96.0
+offset_right = -1140.0
+offset_bottom = 57.0
+text = "hello!
+thank you for playing my game!
+A and D to move,
+space to roll,
+and M to slash!
+"
+
+[node name="EndLabel3" type="Label" parent="." unique_id=955718254]
+offset_left = -1128.0
+offset_top = -96.0
+offset_right = -884.0
+offset_bottom = 57.0
+text = "have fun!
+it's pretty barebones right now, and the boss is nowhere near 
+final, but i had to get something out! enjoy!
+
+(walk through here to start) ------------------------------------->"
 
 [connection signal="defeated" from="Swordsman" to="." method="_on_swordsman_defeated"]
 [connection signal="body_entered" from="enterbarrierdisable" to="." method="_on_enterbarrierdisable_body_entered"]

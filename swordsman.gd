@@ -17,6 +17,7 @@ enum states {
 
 @export var disabled: bool = false
 signal defeated
+var max_aggro: int = 4
 var state: states = states.WALK
 var p_pos: int ### -1 is left 1 is right
 var opp_pos: int
@@ -30,6 +31,7 @@ var max_health: int = 35
 var health: int = max_health
 var hit_aggro: int = 0
 var title: String = "The Drone"
+var stage: int = 1
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -49,10 +51,12 @@ func _process(delta: float) -> void:
 	else:
 		Global.boss_health = health
 	
+	
+	
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
 	
-	if hit_aggro >= 4:
+	if hit_aggro >= max_aggro:
 		state = states.JUMP_BACK
 	
 	match state:
@@ -104,7 +108,7 @@ func _process(delta: float) -> void:
 			
 		states.SMASH_ATTACK:
 			play_anim("smash")
-			move(delta, 0, true, true, true, [9].pick_random())
+			move(delta, 2, true, true, false, [9].pick_random())
 			#await get_tree().create_timer(3).timeout
 			#print("at smash pt2")
 			if global_position.y-Global.player_pos.y >= 40:
@@ -189,6 +193,9 @@ func hurt():
 	#Global.boss_health = health
 	Callable(freeze_frame).call_deferred()
 	print(health, " just got hurt")
+	if health < max_health/2 and stage == 1:
+		stage = 2
+		max_aggro -= 2
 
 func play_anim(anim: StringName = &"fly"):
 	if $AnimatedSprite2D.animation != anim:
