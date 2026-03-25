@@ -11,7 +11,7 @@ have fun!
 
 ## how do i play it?
 ### controls
-| Column1 | Column2 |
+| keys | description |
 | -------------- | --------------- |
 | A & D | move left and right |
 | Spacebar | dodge roll (you are invulerable untile the animation ends!) |
