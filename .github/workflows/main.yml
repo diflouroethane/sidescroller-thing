@@ -1,6 +1,7 @@
 name: "godot web export"
 on: push
-
+permissions:
+  contents: write
 env:
   GODOT_VERSION: 4.6.1
   EXPORT_NAME: boss-rush
