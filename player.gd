@@ -51,7 +51,8 @@ func _physics_process(delta: float) -> void:
 	boss_health.value = lerp(boss_health.value,float(Global.boss_health), 0.25)
 	boss_name.text = Global.boss_name
 	print_info()
-	
+	if health <= 0 and !Global.no_die:
+		get_tree().reload_current_scene()
 	Global.player_pos = position
 	# Add the gravity.
 	if not is_on_floor():
@@ -134,8 +135,6 @@ func hurt(dmg: int) -> void:
 		push_error("tried to hurt player for negative health!!")
 		return
 	health -= dmg
-	if health <= 0:
-		
-		get_tree().reload_current_scene()
+	
 	$Camera2D.shake(10)
 	

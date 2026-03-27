@@ -205,8 +205,10 @@ func freeze_frame(duration: float = 0.05):
 	$AnimatedSprite2D.modulate = Color(18.892, 18.892, 18.892)
 	var time_scale = Engine.time_scale
 	Engine.time_scale = 0
+	Global.no_die = true
 	await get_tree().create_timer(duration, true, false, true).timeout
 	Engine.time_scale = time_scale
+	Global.no_die = false
 	$AnimatedSprite2D.modulate = Color(1,1,1,1)
 	
 	if health == 0:
